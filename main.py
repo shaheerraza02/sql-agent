@@ -10,6 +10,8 @@ from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain.chat_models import init_chat_model
 from langchain import hub
 from langgraph.prebuilt import create_react_agent
+from langchain.memory import ConversationBufferMemory
+
 
 # Load from .env locally (optional, for dev)
 load_dotenv()
