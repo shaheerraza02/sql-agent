@@ -53,9 +53,10 @@ custom_prompt = prompt_template.format(
 
 system_message = prompt_template.format(dialect="MySQL", top_k=5)
 
+react_agent = create_react_agent(llm, tools, prompt=system_message)
+
 memory = ConversationBufferMemory(return_messages=True)
-llm_with_memory = llm.bind(memory=memory)
-agent_executor = create_react_agent(llm_with_memory, tools, prompt=system_message)
+agent_executor = AgentExecutor(agent=react_agent, tools=tools, memory=memory, verbose=True)
 
 # FastAPI app
 app = FastAPI()
