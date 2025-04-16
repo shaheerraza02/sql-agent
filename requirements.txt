@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pymysql
+langchain
+langchain-community
+langchainhub
+langgraph
+langchain-openai
+langsmith
