@@ -38,9 +38,22 @@ llm = init_chat_model("gpt-4o-mini", model_provider="openai")
 toolkit = SQLDatabaseToolkit(db=db, llm=llm)
 tools = toolkit.get_tools()
 prompt_template = hub.pull("langchain-ai/sql-agent-system-prompt")
+custom_prompt = prompt_template.format(
+    dialect="MySQL",
+    top_k=5,
+    tools=tools,
+    extra_instructions=(
+        "Think step-by-step. If a query might be unsafe or ambiguous, ask the user to clarify. "
+        "Avoid selecting too many rows unless necessary. Format dates consistently."
+        "Clear memory using memory.clear() if user specifically ask for"
+    )
+)
+
 system_message = prompt_template.format(dialect="MySQL", top_k=5)
 
-agent_executor = create_react_agent(llm, tools, prompt=system_message)
+memory = ConversationBufferMemory(return_messages=True)
+llm_with_memory = llm.bind(memory=memory)
+agent_executor = create_react_agent(llm_with_memory, tools, prompt=system_message)
 
 # FastAPI app
 app = FastAPI()
