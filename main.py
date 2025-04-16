@@ -43,6 +43,14 @@ agent_executor = create_react_agent(llm, tools, prompt=system_message)
 
 # FastAPI app
 app = FastAPI()
+allow_origins=["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,              # or ["*"] for all origins (not recommended for production)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Input schema
 class QueryRequest(BaseModel):
