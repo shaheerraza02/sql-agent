@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 import os
+from dotenv import load_dotenv
 
 from langchain_community.utilities import SQLDatabase
 from langchain_community.tools.sql_database.tool import QuerySQLDatabaseTool
@@ -9,14 +10,26 @@ from langchain.chat_models import init_chat_model
 from langchain import hub
 from langgraph.prebuilt import create_react_agent
 
-# ENV setup (use dotenv or secrets manager in prod)
-os.environ["OPENAI_API_KEY"] = "your_openai_api_key"
-os.environ["LANGSMITH_API_KEY"] = "your_langsmith_api_key"
-os.environ["LANGSMITH_TRACING"] = "true"
-os.environ["LANGSMITH_PROJECT"] = "your_project_name"
+# Load from .env locally (optional, for dev)
+load_dotenv()
 
-# DB config
-db_uri = "mysql+pymysql://orko_ai:NewRandomPassword456@cvp-pilot-mysql.mysql.database.azure.com:3306/orko_ai_pilot"
+db_host = os.getenv("DB_HOST")
+db_port = os.getenv("DB_PORT", "3306")
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+db_name = os.getenv("DB_NAME")
+
+openai_api_key = os.getenv("OPENAI_API_KEY")
+
+os.environ["OPENAI_API_KEY"] = openai_api_key
+os.environ["LANGSMITH_API_KEY"] = os.getenv("LANGSMITH_API_KEY")
+os.environ["LANGSMITH_TRACING"] = os.getenv("LANGSMITH_TRACING", "false")
+os.environ["LANGSMITH_ENDPOINT"] = os.getenv("LANGSMITH_ENDPOINT")
+os.environ["LANGSMITH_PROJECT"] = os.getenv("LANGSMITH_PROJECT")
+
+# DB connection URI for LangChain
+from langchain_community.utilities import SQLDatabase
+db_uri = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 db = SQLDatabase.from_uri(db_uri)
 
 # LangChain setup
